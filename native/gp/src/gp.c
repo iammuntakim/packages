@@ -49,7 +49,6 @@ int main(int argc, char *argv[]) {
     char pull_before[16] = "false";
     char generate_log[16] = "false";
     char dry_run[16] = "false";
-    char add_all[16] = "true";
     char auto_tag[16] = "false";
     char skip_ci[16] = "false";
     char amend[16] = "false";
@@ -65,7 +64,6 @@ int main(int argc, char *argv[]) {
     get_val(raw_decoded, "PULL_BEFORE", pull_before);
     get_val(raw_decoded, "GENERATE_LOG", generate_log);
     get_val(raw_decoded, "DRY_RUN", dry_run);
-    get_val(raw_decoded, "ADD_ALL", add_all);
     get_val(raw_decoded, "AUTO_TAG", auto_tag);
     get_val(raw_decoded, "SKIP_CI", skip_ci);
     get_val(raw_decoded, "AMEND", amend);
@@ -114,10 +112,6 @@ int main(int argc, char *argv[]) {
             strcpy(dry_run, "true");
         } else if (strcmp(argv[arg_idx], "+d") == 0) {
             strcpy(dry_run, "false");
-        } else if (strcmp(argv[arg_idx], "-s") == 0) {
-            strcpy(add_all, "false");
-        } else if (strcmp(argv[arg_idx], "+s") == 0) {
-            strcpy(add_all, "true");
         } else if (strcmp(argv[arg_idx], "-t") == 0 && arg_idx + 1 < argc) {
             strcpy(auto_tag, "true");
             strcpy(tag_name, argv[arg_idx + 1]);
@@ -158,8 +152,8 @@ int main(int argc, char *argv[]) {
     
     char encode_buf[4096];
     snprintf(encode_buf, sizeof(encode_buf),
-             "REPO=%s\nBRANCH=%s\nREMOTE=%s\nFORCE_PUSH=%s\nPULL_BEFORE=%s\nGENERATE_LOG=%s\nDRY_RUN=%s\nADD_ALL=%s\nAUTO_TAG=%s\nSKIP_CI=%s\nAMEND=%s\nSQUASH_VAL=%s\nREBASE=%s\nSTASH_WORK=%s\nTAG_NAME=%s\nSHOULD_PUSH=%s\n",
-             latest_repo, latest_branch, remote_url, force_push, pull_before, generate_log, dry_run, add_all, auto_tag, skip_ci, amend, squash_val, rebase, stash_work, tag_name, should_push);
+             "REPO=%s\nBRANCH=%s\nREMOTE=%s\nFORCE_PUSH=%s\nPULL_BEFORE=%s\nGENERATE_LOG=%s\nDRY_RUN=%s\nAUTO_TAG=%s\nSKIP_CI=%s\nAMEND=%s\nSQUASH_VAL=%s\nREBASE=%s\nSTASH_WORK=%s\nTAG_NAME=%s\nSHOULD_PUSH=%s\n",
+             latest_repo, latest_branch, remote_url, force_push, pull_before, generate_log, dry_run, auto_tag, skip_ci, amend, squash_val, rebase, stash_work, tag_name, should_push);
     
     fp = fopen(config_file, "w");
     if (fp) {
@@ -211,7 +205,9 @@ int main(int argc, char *argv[]) {
     }
     
     if (strcmp(stash_work, "true") == 0) system("git stash pop");
-    if (strcmp(add_all, "true") == 0) system("git add .");
+    
+    system("git add .");
+    
     if (strcmp(skip_ci, "true") == 0) strcat(commit_msg, " [skip ci]");
     
     int s_val = atoi(squash_val);
