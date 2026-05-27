@@ -1,0 +1,36 @@
+name: build Packages
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Grant build script permission
+        run: chmod +x build.sh
+
+      - name: Run build script
+        run: ./build.sh
+
+      - name: Create tarball
+        run: |
+          tar -cJf packages-tar.xz --exclude='./.git' .
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'push'
+        with:
+          tag_name: build-${{ github.run_number }}
+          files: |
+            packages-tar.xz
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
