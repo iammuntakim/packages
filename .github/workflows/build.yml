@@ -15,6 +15,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+
       - name: Grant build script permission
         run: chmod +x build.sh
 
@@ -33,4 +36,3 @@ jobs:
           files: |
             packages-tar.xz
           token: ${{ secrets.GITHUB_TOKEN }}
-          
