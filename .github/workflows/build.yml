@@ -26,7 +26,10 @@ jobs:
 
       - name: Create tarball
         run: |
-          tar -cJf packages-tar.xz --exclude='./.git' .
+          # Create the tarball in the runner's home directory instead of the repo folder
+          # This prevents tar from trying to archive the file it is currently creating
+          tar -cJf ../packages-tar.xz --exclude='./.git' .
+          mv ../packages-tar.xz .
 
       - name: Release
         uses: softprops/action-gh-release@v2
