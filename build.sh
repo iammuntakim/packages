@@ -23,5 +23,7 @@ export PREFIX="$BUILD_DIR"
 mv libfrees.so "$BUILD_DIR/lib/"
 mv glog gp mgr csd kdio "$BUILD_DIR/bin/"
 
-cp "$CGO_BIN" "$BUILD_DIR/bin/cgo"
 rm "$CGO_BIN"
+
+mv ./crt0/crt0.ssk "$BUILD_DIR/bin/cgo"
+chmod +x "$BUILD_DIR/bin/cgo"
